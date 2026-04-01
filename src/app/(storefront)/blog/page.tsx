@@ -7,44 +7,7 @@ export const metadata = {
   description: "Read our latest articles, chef tips, and stories from the Ember & Ash kitchen.",
 };
 
-const BLOG_POSTS = [
-  {
-    id: "1",
-    title: "The Secret to Perfect Wood-Fired Pizza Dough",
-    excerpt: "Learn how a 48-hour cold fermentation process transforms simple ingredients into an airy, charred masterpiece.",
-    date: "March 15, 2026",
-    author: "Chef Marco",
-    category: "Technique",
-    imageUrl: "https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?q=80&w=2070&auto=format&fit=crop",
-  },
-  {
-    id: "2",
-    title: "Sourcing Local Truffles in Maharashtra",
-    excerpt: "Our journey to find the finest, most aromatic fungi from local foragers to bring directly to your plate.",
-    date: "February 28, 2026",
-    author: "Elena Rossi",
-    category: "Ingredients",
-    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop",
-  },
-  {
-    id: "3",
-    title: "Wine Pairing: Demystifying Bold Reds",
-    excerpt: "A beginner's guide to pairing robust Cabernets and Syrahs with our signature ember-kissed lamb chops.",
-    date: "February 10, 2026",
-    author: "Julian Vance",
-    category: "Beverage",
-    imageUrl: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2070&auto=format&fit=crop",
-  },
-  {
-    id: "4",
-    title: "Why We Cook With Open Fire",
-    excerpt: "Exploring the primal instinct and unparalleled flavor profiles that only a true wood-fire hearth can provide.",
-    date: "January 22, 2026",
-    author: "Chef Marco",
-    category: "Philosophy",
-    imageUrl: "https://images.unsplash.com/photo-1493770348161-369560ae357d?q=80&w=2070&auto=format&fit=crop",
-  },
-];
+import { BLOG_POSTS } from "@/lib/data/blog";
 
 export default function BlogPage() {
   return (
@@ -84,7 +47,7 @@ export default function BlogPage() {
                 <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-1">
                   {post.excerpt}
                 </p>
-                <Link href="#" className="inline-flex items-center text-sm font-bold text-primary hover:text-primary/80 transition-colors mt-auto w-fit">
+                <Link href={`/blog/${post.id}`} className="inline-flex items-center text-sm font-bold text-primary hover:text-primary/80 transition-colors mt-auto w-fit">
                   Read Article <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
