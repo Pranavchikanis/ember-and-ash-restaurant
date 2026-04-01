@@ -122,11 +122,21 @@ export default function MenuPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
 
+  const [dbError, setDbError] = useState("");
+
   useEffect(() => {
     fetch("/api/menu")
       .then((r) => r.json())
       .then((data) => {
-        setItems(data);
+        if (data.error) {
+          setDbError(data.error);
+        } else {
+          setItems(Array.isArray(data) ? data : []);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setDbError(String(err));
         setLoading(false);
       });
   }, []);
@@ -158,34 +168,44 @@ export default function MenuPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Search + Filter Row */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search dishes..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-full bg-card border border-border text-sm focus:outline-none focus:border-primary transition-colors"
-            />
+        {!dbError && (
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search dishes..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2.5 rounded-full bg-card border border-border text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+            {/* Category chips */}
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`shrink-0 text-xs font-semibold px-4 py-2 rounded-full border transition-colors ${
+                    activeCategory === cat
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border text-muted-foreground hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
-          {/* Category chips */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`shrink-0 text-xs font-semibold px-4 py-2 rounded-full border transition-colors ${
-                  activeCategory === cat
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-muted-foreground hover:border-primary hover:text-primary"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+        )}
+
+        {/* Display DB Error instantly securely */}
+        {dbError && (
+          <div className="p-8 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl mb-12">
+            <h2 className="text-xl font-bold mb-2 flex items-center gap-2"><Flame className="w-5 h-5"/> Vercel Connection Error</h2>
+            <pre className="whitespace-pre-wrap font-mono text-sm max-h-96 overflow-auto">{dbError}</pre>
           </div>
-        </div>
+        )}
 
         {/* Items */}
         {loading ? (

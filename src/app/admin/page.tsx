@@ -9,15 +9,30 @@ export default async function AdminDashboard() {
     redirect("/admin/login");
   }
 
-  // Get metrics
-  const totalOrders = await prisma.order.count();
-  const totalReservations = await prisma.reservation.count();
-  const totalMenu = await prisma.menuItem.count();
-  const recentOrders = await prisma.order.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: { orderItems: { include: { menuItem: true } } }
-  });
+  let totalOrders = 0, totalReservations = 0, totalMenu = 0, recentOrders: any[] = [];
+  let dbError = null;
+
+  try {
+    totalOrders = await prisma.order.count();
+    totalReservations = await prisma.reservation.count();
+    totalMenu = await prisma.menuItem.count();
+    recentOrders = await prisma.order.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: { orderItems: { include: { menuItem: true } } }
+    });
+  } catch (err: any) {
+    dbError = String(err);
+  }
+
+  if (dbError) {
+    return (
+      <div className="p-10 text-red-500 bg-red-500/10 border border-red-500/30 rounded-xl mt-10">
+        <h2 className="text-xl font-bold mb-4">CRITICAL PRISMA ERROR ON VERCEL:</h2>
+        <pre className="whitespace-pre-wrap text-sm">{dbError}</pre>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">

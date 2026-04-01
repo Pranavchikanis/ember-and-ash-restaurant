@@ -7,9 +7,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
 
-    // Auto-seed if needed (dev convenience)
-    await seedMenuItems();
-
     const where = category && category !== "All" ? { category: { contains: category } } : {};
 
     const items = await prisma.menuItem.findMany({
