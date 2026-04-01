@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?  @unique
+  email     String?  @unique
+  role      String   @default("CUSTOMER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reservations Reservation[]
+  orders       Order[]
+}
+
+// MenuItem Model
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  category    String
+  imageUrl    String?
+  isAvailable Boolean  @default(true)
+  dietaryTags String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems OrderItem[]
+}
+
+// Order Model
+model Order {
+  id              String   @id @default(cuid())
+  userId          String?
+  status          String   @default("PENDING")
+  totalAmount     Float
+  deliveryAddress String?
+  orderType       String   @default("DELIVERY")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user       User?       @relation(fields: [userId], references: [id])
+  orderItems OrderItem[]
+}
+
+// OrderItem Model
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  menuItemId  String
+  quantity    Int
+  priceAtTime Float
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+}
+
+// Reservation Model
+model Reservation {
+  id              String   @id @default(cuid())
+  userId          String?
+  date            DateTime
+  time            String
+  guests          Int
+  status          String   @default("CONFIRMED")
+  specialRequests String?
+  name            String?
+  phone           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id])
+}
+
+// Offer Model
+model Offer {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  discountType  String
+  discountValue Float
+  minOrderValue Float
+  validUntil    DateTime
+  createdAt     DateTime @default(now())
+}
