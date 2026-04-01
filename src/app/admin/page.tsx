@@ -10,12 +10,20 @@ export default async function AdminDashboard() {
   }
 
   let totalOrders = 0, totalReservations = 0, totalMenu = 0, recentOrders: any[] = [];
+  let totalRevenue = 0;
   let dbError = null;
 
   try {
     totalOrders = await prisma.order.count();
     totalReservations = await prisma.reservation.count();
     totalMenu = await prisma.menuItem.count();
+    
+    const revenueAgg = await prisma.order.aggregate({
+      _sum: { totalAmount: true },
+      where: { status: { in: ["PAID", "COMPLETED", "DELIVERED"] } }
+    });
+    totalRevenue = revenueAgg._sum.totalAmount || 0;
+
     recentOrders = await prisma.order.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
@@ -47,7 +55,7 @@ export default async function AdminDashboard() {
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
-              <p className="text-2xl font-bold">₹0</p>
+              <p className="text-2xl font-bold">₹{totalRevenue.toLocaleString("en-IN")}</p>
             </div>
             <div className="p-2 bg-primary/10 rounded-lg">
               <IndianRupee className="w-5 h-5 text-primary" />

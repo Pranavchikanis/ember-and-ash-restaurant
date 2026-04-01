@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { prisma } from "@/lib/prisma";
 
 // Idempotent seed: only runs if menu is empty

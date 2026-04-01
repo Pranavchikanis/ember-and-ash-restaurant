@@ -302,7 +302,7 @@ export default function CheckoutPage() {
                   <Loader2 className="w-4 h-4 animate-spin" /> {paymentStatus || "Processing..."}
                 </span>
               ) : (
-                paymentMethod === "CARD" ? `Pay ${RESTAURANT_CONFIG.currency}{(cartTotal + (orderType === "DELIVERY" ? 49 : 0) + Math.round(cartTotal * 0.05)).toLocaleString("en-IN")} Structurally` : "Confirm Order"
+                paymentMethod === "CARD" ? `Pay ${RESTAURANT_CONFIG.currency}${(cartTotal + (orderType === "DELIVERY" ? 49 : 0) + Math.round(cartTotal * 0.05)).toLocaleString("en-IN")}` : "Confirm Order"
               )}
             </button>
             <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
